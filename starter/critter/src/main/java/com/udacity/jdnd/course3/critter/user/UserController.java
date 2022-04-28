@@ -1,7 +1,9 @@
 package com.udacity.jdnd.course3.critter.user;
 
 import com.udacity.jdnd.course3.critter.entity.Customer;
+import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
+import com.udacity.jdnd.course3.critter.service.PetService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Handles web requests related to Users.
@@ -23,35 +26,30 @@ import java.util.Set;
 public class UserController {
 
     private CustomerService customerService;
+    private PetService petService;
 
     @Autowired
     public UserController(CustomerService customerService) {
         this.customerService = customerService;
+        this.petService = petService;
     }
 
     @GetMapping("/customer/{id}")
     public CustomerDTO getCustomer(@PathVariable long id) {
-        CustomerDTO customerDTO = new CustomerDTO();
         Customer customer = customerService.getCustomerById(id);
 
-        if(customer != null)
-            BeanUtils.copyProperties(customer, customerDTO);
-        else
+        if(customer == null)
             return new CustomerDTO();
-
-        return customerDTO;
+        else
+            return convertCustomerToCustomerDTO(customer);
     }
 
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
 
-        Customer customer = new Customer();
-        BeanUtils.copyProperties(customerDTO, customer);
+        Customer costumer = customerService.saveCustomer(convertCustomerDTOToCustomer(customerDTO));
 
-        CustomerDTO customerDTO2 = new CustomerDTO();
-        BeanUtils.copyProperties(customerService.saveCustomer(customer), customerDTO2);
-
-        return customerDTO;
+        return convertCustomerToCustomerDTO(costumer);
     }
 
     @GetMapping("/customer")
@@ -82,6 +80,33 @@ public class UserController {
     @GetMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
         throw new UnsupportedOperationException();
+    }
+
+    private Customer convertCustomerDTOToCustomer(CustomerDTO customerDTO) {
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(customerDTO, customer);
+
+        if(!customerDTO.getPetIds().isEmpty()) {
+            // translate List of petIds to List of Pets
+            customerDTO.getPetIds().stream()
+                    .map(id -> petService.getPetById(id))
+                    .forEach(pet -> customer.addPet(pet));
+        }
+
+        return customer;
+    }
+
+    private CustomerDTO convertCustomerToCustomerDTO(Customer customer) {
+
+        CustomerDTO customerDTO2 = new CustomerDTO();
+        BeanUtils.copyProperties(customer, customerDTO2);
+
+        // translate List of Pets to List of petIds
+        customerDTO2.setPetIds(customer.getPets().stream()
+                                .map(Pet::getId)
+                                .collect(Collectors.toList()));
+
+        return customerDTO2;
     }
 
 

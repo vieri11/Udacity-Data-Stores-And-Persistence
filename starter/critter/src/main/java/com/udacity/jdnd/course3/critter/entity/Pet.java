@@ -23,9 +23,9 @@ public class Pet {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY) //many plants can belong to one delivery
+    @ManyToOne(fetch = FetchType.LAZY) //many pets can belong to one delivery
     @JoinColumn(name = "customer_id")  //map the join column in the plant table
-    private Customer customer;
+    private Customer owner;
 
     private LocalDate birthDate;
 

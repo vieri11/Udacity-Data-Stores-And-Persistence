@@ -1,7 +1,6 @@
 package com.udacity.jdnd.course3.critter.entity;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -24,9 +23,13 @@ public class Customer {
 
     private String notes;
 
-    // make sure to specify mappedBy. Lazy fetch optional,
-    // but often a good idea for collection attributes
-    // added CascadeType.REMOVE to automatically clear any associated pets when removed
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Pet.class)
     private List<Pet> pets = new ArrayList<>();
+
+    public void addPet(Pet pet) {
+        if(pets == null){
+            pets = new ArrayList<>();
+        }
+        pets.add(pet);
+    }
 }
