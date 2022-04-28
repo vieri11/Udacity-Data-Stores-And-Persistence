@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.user;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
+@EqualsAndHashCode
 public class EmployeeDTO {
     private long id;
     private String name;

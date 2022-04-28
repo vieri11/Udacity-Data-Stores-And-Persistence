@@ -1,6 +1,7 @@
 package com.udacity.jdnd.course3.critter.entity;
 
 import com.udacity.jdnd.course3.critter.pet.PetType;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @Entity
 @Table(name="pet")
 public class Pet {

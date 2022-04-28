@@ -50,16 +50,13 @@ public class UserController {
 
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
-
         Customer costumer = customerService.saveCustomer(convertCustomerDTOToCustomer(customerDTO));
-
         return convertCustomerToCustomerDTO(costumer);
     }
 
     @GetMapping("/customer")
     public List<CustomerDTO> getAllCustomers(){
         List<Customer> customerList = customerService.getAllCustomers();
-
         return convertCustomerToCustomerDTO(customerList);
     }
 
@@ -70,15 +67,12 @@ public class UserController {
 
     @PostMapping("/employee")
     public EmployeeDTO saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
-
         Employee employee = employeeService.saveEmployee(convertEmployeeDTOToEmployee(employeeDTO));
-
         return convertEmployeeToEmployeeDTO(employee);
     }
 
     @GetMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
-
         Employee employee = employeeService.getEmployeeById(employeeId);
 
         if(employee == null)

@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @Entity
 @Table(name = "customer")
 public class Customer {

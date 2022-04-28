@@ -1,6 +1,7 @@
 package com.udacity.jdnd.course3.critter.entity;
 
 import com.udacity.jdnd.course3.critter.user.EmployeeSkill;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @Entity
 @Table(name = "employee")
 public class Employee {
