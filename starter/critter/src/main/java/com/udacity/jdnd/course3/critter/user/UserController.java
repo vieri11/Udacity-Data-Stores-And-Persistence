@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,24 +43,24 @@ public class UserController {
         if(customer == null)
             return new CustomerDTO();
         else
-            return convertCustomerToCustomerDTO(customer);
+            return convertCustomersToCustomerDTOs(customer);
     }
 
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
         Customer costumer = customerService.saveCustomer(convertCustomerDTOToCustomer(customerDTO));
-        return convertCustomerToCustomerDTO(costumer);
+        return convertCustomersToCustomerDTOs(costumer);
     }
 
     @GetMapping("/customer")
     public List<CustomerDTO> getAllCustomers(){
         List<Customer> customerList = customerService.getAllCustomers();
-        return convertCustomerToCustomerDTO(customerList);
+        return convertCustomersToCustomerDTOs(customerList);
     }
 
     @GetMapping("/customer/pet/{petId}")
     public CustomerDTO getOwnerByPet(@PathVariable long petId){
-        return convertCustomerToCustomerDTO(petService.getPetById(petId).getOwner());
+        return convertCustomersToCustomerDTOs(petService.getPetById(petId).getOwner());
     }
 
     @PostMapping("/employee")
@@ -83,12 +81,15 @@ public class UserController {
 
     @PutMapping("/employee/{employeeId}")
     public void setAvailability(@RequestBody Set<DayOfWeek> daysAvailable, @PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+        Employee employee = employeeService.getEmployeeById(employeeId);
+        employee.setDaysAvailable(daysAvailable);
+        employeeService.saveEmployee(employee);
     }
 
     @GetMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
-        throw new UnsupportedOperationException();
+        List<Employee> employeeList = employeeService.findEmployeesForService(employeeDTO.getDate(), employeeDTO.getSkills());
+        return convertEmployeesToEmployeesDTOs(employeeList);
     }
 
     private Customer convertCustomerDTOToCustomer(CustomerDTO customerDTO) {
@@ -105,7 +106,7 @@ public class UserController {
         return customer;
     }
 
-    private CustomerDTO convertCustomerToCustomerDTO(Customer customer) {
+    private CustomerDTO convertCustomersToCustomerDTOs(Customer customer) {
 
         CustomerDTO customerDTO2 = new CustomerDTO();
         BeanUtils.copyProperties(customer, customerDTO2);
@@ -118,11 +119,11 @@ public class UserController {
         return customerDTO2;
     }
 
-    private List<CustomerDTO> convertCustomerToCustomerDTO(List<Customer> customers){
+    private List<CustomerDTO> convertCustomersToCustomerDTOs(List<Customer> customers){
 
         // iterate through each Customer and convert to CustomerDTO
         return customers.stream()
-                .map(c -> convertCustomerToCustomerDTO(c))
+                .map(c -> convertCustomersToCustomerDTOs(c))
                 .collect(Collectors.toList());
     }
 
@@ -138,5 +139,13 @@ public class UserController {
         BeanUtils.copyProperties(employee, employeeDTO);
 
         return employeeDTO;
+    }
+
+    private List<EmployeeDTO> convertEmployeesToEmployeesDTOs(List<Employee> employeeList){
+
+        // iterate through each Employee and convert to EmployeeDTO
+        return employeeList.stream()
+                .map(e -> convertEmployeeToEmployeeDTO(e))
+                .collect(Collectors.toList());
     }
 }
