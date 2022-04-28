@@ -6,9 +6,11 @@ import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.PetService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Handles web requests related to Pets.
@@ -29,37 +31,55 @@ public class PetController {
     @PostMapping
     public PetDTO savePet(@RequestBody PetDTO petDTO) {
 
-        Pet pet = new Pet();
-        BeanUtils.copyProperties(petDTO, pet);
-
-        pet.setOwner(customerService.getCustomerById(petDTO.getOwnerId()));
-
-        PetDTO petDTO2 = new PetDTO();
-        BeanUtils.copyProperties(petService.savePet(pet), petDTO2);
-
-        return petDTO2;
+        Pet pet = petService.savePet(convertPetDTOToPet(petDTO));
+        return convertPetToPetDTO(pet);
     }
 
     @GetMapping("/{petId}")
     public PetDTO getPet(@PathVariable long petId) {
-        PetDTO petDTO = new PetDTO();
         Pet pet = petService.getPetById(petId);
 
         if(pet != null)
-            BeanUtils.copyProperties(pet, petDTO);
+            return convertPetToPetDTO(pet);
         else
             return new PetDTO();
-
-        return petDTO;
     }
 
     @GetMapping
     public List<PetDTO> getPets(){
-        throw new UnsupportedOperationException();
+        List<Pet> petList = petService.getAllPets();
+
+        return convertPetstoPetDTOs(petList);
     }
 
     @GetMapping("/owner/{ownerId}")
     public List<PetDTO> getPetsByOwner(@PathVariable long ownerId) {
-        throw new UnsupportedOperationException();
+
+        return convertPetstoPetDTOs(petService.getPetsByOwner(ownerId));
+    }
+
+    public Pet convertPetDTOToPet (PetDTO petDTO) {
+        Pet pet = new Pet();
+        BeanUtils.copyProperties(petDTO, pet);
+
+        // Get Owner object from ownerId
+        pet.setOwner(customerService.getCustomerById(petDTO.getOwnerId()));
+
+        return pet;
+    }
+
+    public PetDTO convertPetToPetDTO (Pet pet) {
+        PetDTO petDTO = new PetDTO();
+
+        BeanUtils.copyProperties(pet, petDTO);
+        petDTO.setOwnerId(pet.getOwner().getId());
+
+        return petDTO;
+    }
+
+    public List<PetDTO> convertPetstoPetDTOs (List<Pet> petList) {
+        return petList.stream()
+                .map(p -> convertPetToPetDTO(p))
+                .collect(Collectors.toList());
     }
 }

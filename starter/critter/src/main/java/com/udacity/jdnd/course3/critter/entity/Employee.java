@@ -1,9 +1,18 @@
 package com.udacity.jdnd.course3.critter.entity;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.udacity.jdnd.course3.critter.user.EmployeeSkill;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.persistence.*;
+import java.time.DayOfWeek;
+import java.util.HashSet;
+import java.util.Set;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "employee")
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,5 +20,9 @@ public class Employee {
 
     private String name;
 
-    private String skills;
+    @ElementCollection
+    private Set<EmployeeSkill> skills = new HashSet<>();
+
+    @ElementCollection
+    private Set<DayOfWeek> daysAvailable = new HashSet<>();
 }
