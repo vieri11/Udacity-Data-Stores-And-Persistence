@@ -1,9 +1,15 @@
 package com.udacity.jdnd.course3.critter.user;
 
+import com.udacity.jdnd.course3.critter.entity.Customer;
+import com.udacity.jdnd.course3.critter.service.CustomerService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -16,9 +22,36 @@ import java.util.Set;
 @RequestMapping("/user")
 public class UserController {
 
+    private CustomerService customerService;
+
+    @Autowired
+    public UserController(CustomerService customerService) {
+        this.customerService = customerService;
+    }
+
+    @GetMapping("/customer/{id}")
+    public CustomerDTO getCustomer(@PathVariable long id) {
+        CustomerDTO customerDTO = new CustomerDTO();
+        Customer customer = customerService.getCustomerById(id);
+
+        if(customer != null)
+            BeanUtils.copyProperties(customer, customerDTO);
+        else
+            return new CustomerDTO();
+
+        return customerDTO;
+    }
+
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
-        throw new UnsupportedOperationException();
+
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(customerDTO, customer);
+
+        CustomerDTO customerDTO2 = new CustomerDTO();
+        BeanUtils.copyProperties(customerService.saveCustomer(customer), customerDTO2);
+
+        return customerDTO;
     }
 
     @GetMapping("/customer")
@@ -49,6 +82,19 @@ public class UserController {
     @GetMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
         throw new UnsupportedOperationException();
+    }
+
+
+    private Optional<List<CustomerDTO>> convertCustomerToCustomerDTO(List<Customer> customers){
+        List<CustomerDTO> newCustomerDTO = new ArrayList<>();
+        CustomerDTO customerDTO = new CustomerDTO();
+
+        for(Customer c : customers) {
+            BeanUtils.copyProperties(c, customerDTO);
+            newCustomerDTO.add(customerDTO);
+        }
+
+        return Optional.of(newCustomerDTO);
     }
 
 }

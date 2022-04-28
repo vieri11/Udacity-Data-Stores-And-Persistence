@@ -1,7 +1,15 @@
 package com.udacity.jdnd.course3.critter.entity;
 
-import javax.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "customer")
 public class Customer {
@@ -14,29 +22,11 @@ public class Customer {
 
     private String phoneNumber;
 
-    /* Getters and Setters*/
+    private String notes;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+    // make sure to specify mappedBy. Lazy fetch optional,
+    // but often a good idea for collection attributes
+    // added CascadeType.REMOVE to automatically clear any associated pets when removed
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<Pet> pets = new ArrayList<>();
 }
