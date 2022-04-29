@@ -29,9 +29,9 @@ public class Customer {
     private List<Pet> pets = new ArrayList<>();
 
     public void addPet(Pet pet) {
-        if(pets == null){
-            pets = new ArrayList<>();
+        if(this.pets == null){
+            this.pets = new ArrayList<>();
         }
-        pets.add(pet);
+        this.pets.add(pet);
     }
 }

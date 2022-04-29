@@ -43,24 +43,24 @@ public class UserController {
         if(customer == null)
             return new CustomerDTO();
         else
-            return convertCustomersToCustomerDTOs(customer);
+            return convertCustomerToCustomerDTO(customer);
     }
 
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
         Customer costumer = customerService.saveCustomer(convertCustomerDTOToCustomer(customerDTO));
-        return convertCustomersToCustomerDTOs(costumer);
+        return convertCustomerToCustomerDTO(costumer);
     }
 
     @GetMapping("/customer")
     public List<CustomerDTO> getAllCustomers(){
         List<Customer> customerList = customerService.getAllCustomers();
-        return convertCustomersToCustomerDTOs(customerList);
+        return convertCustomerToCustomerDTO(customerList);
     }
 
     @GetMapping("/customer/pet/{petId}")
     public CustomerDTO getOwnerByPet(@PathVariable long petId){
-        return convertCustomersToCustomerDTOs(petService.getPetById(petId).getOwner());
+        return convertCustomerToCustomerDTO(petService.getPetById(petId).getOwner());
     }
 
     @PostMapping("/employee")
@@ -106,7 +106,7 @@ public class UserController {
         return customer;
     }
 
-    private CustomerDTO convertCustomersToCustomerDTOs(Customer customer) {
+    private CustomerDTO convertCustomerToCustomerDTO(Customer customer) {
 
         CustomerDTO customerDTO2 = new CustomerDTO();
         BeanUtils.copyProperties(customer, customerDTO2);
@@ -119,11 +119,11 @@ public class UserController {
         return customerDTO2;
     }
 
-    private List<CustomerDTO> convertCustomersToCustomerDTOs(List<Customer> customers){
+    private List<CustomerDTO> convertCustomerToCustomerDTO(List<Customer> customers){
 
         // iterate through each Customer and convert to CustomerDTO
         return customers.stream()
-                .map(c -> convertCustomersToCustomerDTOs(c))
+                .map(c -> convertCustomerToCustomerDTO(c))
                 .collect(Collectors.toList());
     }
 
